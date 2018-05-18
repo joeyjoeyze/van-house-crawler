@@ -1,22 +1,3 @@
-# Van House Crawler
-
-## Description
-
-The scripts fetch house renting posts in Vancouver from other websites and write the information to MongoDB.
-
-## How to use
-
-```bash
-$ python fetch
-```
-
-## VanPeople
-
-<details>
-
-<summary>Example information that can get from [VanPeople](http://www.vanpeople.com/c/list/1.html)</summary>
-
-```json
 {
     "images": ["http://www.vanpeople.com/c/uploadpic/<image-date>/<image-id>.jpg"],
     "link": "http://www.vanpeople.com/c/<post-id>.html",
@@ -33,9 +14,3 @@ $ python fetch
         "address": "<address>"
     }
 }
-```
-
-Note: `link`, `description`, `title`, `date`, `details.area`, `details.price`, `details.telephone` are guaranteed 
-non-empty values
-
-</details>
