@@ -14,7 +14,7 @@ $ python fetch
 
 <details>
 
-<summary>Example information that can get from [VanPeople](http://www.vanpeople.com/c/list/1.html)</summary>
+<summary>Example information that can get from <a href="http://www.vanpeople.com/c/list/1.html">VanPeople</a></summary>
 
 ```json
 {
