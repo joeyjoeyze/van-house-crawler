@@ -1,0 +1,10 @@
+#!/usr/bin/python
+# -*- coding: UTF-8 -*-
+from cli.cli import parse_argv
+from vanpeople.main import get_vanpeople_posts
+
+# cli
+options = parse_argv()
+
+# fetch posts from vanpeople
+posts = get_vanpeople_posts()

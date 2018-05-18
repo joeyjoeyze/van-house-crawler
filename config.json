@@ -1,0 +1,19 @@
+{
+    "default": {
+        "vanpeople": {
+            "page_numbers": [1],
+            "file_location": "data/vanpeople"
+        }
+    },
+    "databases": {
+        "mongodb": {
+            "db": {
+                "username": "",
+                "password": "",
+                "host": "",
+                "port": "",
+                "database": ""
+            }
+        }
+    }
+}
