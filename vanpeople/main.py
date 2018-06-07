@@ -40,3 +40,23 @@ def get_vanpeople_posts(page_numbers):
 def store_locally(posts):
     with open('data/vanpeople/' + str(time()) + '.json', 'w') as f:
         f.write(dumps(posts, ensure_ascii=False, sort_keys=True, indent=4))
+
+
+def transform(post):
+    return {
+        'title': post['title'],
+        'published_date': post['date'],
+        'contact_info': {
+            'name': post['details']['contact'],
+            'telephone': post['details']['telephone'],
+            'wechat': post['details']['wechat'],
+            'qq': post['details']['qq']
+        },
+        'location_info': {
+            'area': post['details']['area'],
+            'address': post['details']['address']
+        },
+        'description': post['description'],
+        'images': post['images'],
+        'link': post['link']
+    }
