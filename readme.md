@@ -26,7 +26,7 @@ $ python fetch
     "details": {
         "qq": "<qq>",
         "area": "<area>",
-        "price": "$<price>|面议",
+        "price": "$<price>",
         "telephone": "<area-code>-<3-digits-phone-number>-<4-digits-phone-number>",
         "contact": "<name>",
         "wechat": "<wechat>",
@@ -35,7 +35,7 @@ $ python fetch
 }
 ```
 
-Note: `link`, `description`, `title`, `date`, `details.area`, `details.price`, `details.telephone` are guaranteed 
+Note: `link`, `description`, `title`, `date`, `details.area`, `details.telephone` are guaranteed 
 non-empty values
 
 </details>

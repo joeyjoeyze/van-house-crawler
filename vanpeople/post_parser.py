@@ -77,7 +77,7 @@ def parse_details(ep_news):
 
         # match values
         if name == u'价格：'.encode('utf-8'):
-            information['price'] = value
+            information['price'] = value if value != '面议' else None
         elif name == u'地区：'.encode('utf-8'):
             information['area'] = value
         elif name == u'地址：'.encode('utf-8'):
