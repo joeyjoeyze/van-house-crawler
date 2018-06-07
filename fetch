@@ -1,10 +1,18 @@
 #!/usr/bin/python
 # -*- coding: UTF-8 -*-
 from cli.cli import parse_argv
+from cli.options import option, get_config
 from vanpeople.main import get_vanpeople_posts
+from time import time
+import json
 
 # cli
 options = parse_argv()
 
 # fetch posts from vanpeople
-posts = get_vanpeople_posts()
+posts = get_vanpeople_posts(option('default.vanpeople.page_numbers'))
+
+# store locally
+if 'local' in options:
+    with open('data/vanpeople/' + str(time()) + '.json', 'w') as f:
+        f.write(json.dumps(posts, ensure_ascii=False, sort_keys=True, indent=4))
