@@ -3,6 +3,8 @@ from url_builder import main_page
 from requester import request
 from list_parser import parse_list
 from post_parser import parse_post
+from json import dumps
+from time import time
 
 
 def get_vanpeople_posts(page_numbers):
@@ -33,3 +35,8 @@ def get_vanpeople_posts(page_numbers):
             posts.append(post)
 
     return posts
+
+
+def store_locally(posts):
+    with open('data/vanpeople/' + str(time()) + '.json', 'w') as f:
+        f.write(dumps(posts, ensure_ascii=False, sort_keys=True, indent=4))
