@@ -14,14 +14,17 @@ def parse_list(content):
     soup = BeautifulSoup(content, 'lxml')
 
     # get all posts
-    posts = soup.find_all('div', {'class': 'show'})[1].find_all('dt')
+    posts = soup.find_all('li', {'class': 'g-item f-clear'})
 
     # init link list
     links = []
 
     # loop through all posts
     for post in posts:
-        # get the first a tag's href as link
-        links.append(post.find('a').get('href'))
+
+        # ads don't have a custom style
+        if post.get('style') is None:
+            postUrl = post.find('a', {'class': 'ahtitle'})['href']
+            links.append(postUrl)
 
     return links

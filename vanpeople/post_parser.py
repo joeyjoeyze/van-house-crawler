@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from bs4 import BeautifulSoup
-
+import re
+import datetime
 
 def parse_post(content):
     """
@@ -13,20 +14,22 @@ def parse_post(content):
     # parse content
     soup = BeautifulSoup(content, 'lxml')
 
-    # get main post information
-    info = soup.find('div', {'class': 'side'})
-
     # get title
-    title = info.find('h1').get_text().encode('utf-8')
+    mainTitle = soup.find('div', {'id': 'mainTitle'}) 
+    title = mainTitle.find('h1').text
 
     # get publish date time
-    publish = parse_publish_time(info.find('div', {'class': 'ep_info'}))
+    dateUni = u'发布时间'
+    publish = mainTitle.find(text=re.compile(dateUni))[6:]
+
+    # parse date for caller
+    postDate = datetime.datetime.strptime(publish.split()[0], '%Y/%m/%d')
 
     # get contact and location details
-    details = parse_details(info.find('div', {'class': 'ep_news'}))
+    details = parse_details(soup.find('div', {'class': 'ep_news'}))
 
     # get description and image links
-    desc, img_links = parse_description(info.find('div', {'class': 'desc'}).find('div', {'class': 'l'}))
+    desc, img_links = parse_description(soup.find('div', {'id': 'description'}))
 
     return {
         'title': title,
@@ -34,18 +37,8 @@ def parse_post(content):
         'details': details,
         'description': desc,
         'images': img_links
-    }
+    }, postDate
 
-
-def parse_publish_time(ep_info):
-    """
-    get post published time
-
-    :param ep_info: BeautifulSoup()
-    :return: string
-    """
-
-    return ep_info.find('div', {'class': 'l'}).get_text().encode('utf-8')[14:33]
 
 
 def parse_details(ep_news):
@@ -68,38 +61,37 @@ def parse_details(ep_news):
     }
 
     # price and location
-    left = ep_news.find('div', {'class': 'l'})
+    left = ep_news.find('ul', {'class': 'leftUlBox'})
+    leftInfo = left.find_all('span')
 
-    # loop through all left information
-    for info in left.find_all('dl'):
-        # get info name and value
-        name, value = info.find('dt').get_text().encode('utf-8'), info.find('dd').contents[0].encode('utf-8')
-
-        # match values
-        if name == u'价格：'.encode('utf-8'):
-            information['price'] = value if value != '面议' else None
-        elif name == u'地区：'.encode('utf-8'):
-            information['area'] = value
-        elif name == u'地址：'.encode('utf-8'):
-            information['address'] = value
+    for i in range(len(leftInfo) - 1):
+        text = leftInfo[i].text.strip()
+        nextText = leftInfo[i+1].text.strip()
+        if u'价' in text:
+            if u'面' not in nextText:
+                information['price'] = nextText
+        elif u'区' in text:
+            information['area'] = nextText
+        elif u'址' in text:
+            information['address'] = nextText
 
     # contact information
-    right = ep_news.find('div', {'class': 'r'})
+    right = ep_news.find('div', {'class': 'rightBox'})
+    rightInfo = right.find_all('span')
 
     # loop through all right information
-    for info in right.find_all('dl'):
+    for i in range(len(rightInfo) - 1):
         # get info name and value
-        name, value = info.find('dt').get_text().encode('utf-8'), info.find('dd').contents[0].encode('utf-8')
-
-        # match values
-        if name == u'联系人：'.encode('utf-8'):
-            information['contact'] = value
-        elif name == u'电话：'.encode('utf-8'):
-            information['telephone'] = value
-        elif name == u'微信：'.encode('utf-8'):
-            information['wechat'] = value
-        elif name == u'QQ：'.encode('utf-8'):
-            information['qq'] = value
+        text = rightInfo[i].text.strip()
+        nextText = rightInfo[i+1].text.strip()
+        if u'联' in text:
+            information['contact'] = nextText
+        elif u'电' in text:
+            information['telephone'] = nextText
+        elif u'微' in text:
+            information['wechat'] = nextText
+        elif u'Q' in text:
+            information['qq'] = nextText
 
     return information
 
@@ -112,18 +104,11 @@ def parse_description(desc):
     :return: string, List[string]
     """
 
-    # get pic list
-    pics = desc.find('ul', {'class': 'pic_list'})
-
-    # init picture links
-    picture_links = []
-
-    # check pic exists
-    if pics:
-        for pic in pics.find_all('li'):
-            picture_links.append(pic.find('img').get('src'))
-
     # get description
-    description = desc.find('div', {'class': ''}).get_text().encode('utf-8')
+    description = desc.find('div', {'class': 'adsContent'}).text
+
+    picture_links = []
+    for pic in desc.find_all('img'):
+        picture_links.append(pic['src'])
 
     return description, picture_links

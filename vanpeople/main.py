@@ -1,13 +1,14 @@
 # -*- coding: utf-8 -*-
-from url_builder import main_page
+import url_builder
 from requester import request
 from list_parser import parse_list
 from post_parser import parse_post
 from json import dumps
 from time import time
+import datetime
+import sys 
 
-
-def get_vanpeople_posts(page_numbers):
+def get_vanpeople_posts(oldestPostDays, maxPostCount):
     """
     get vanpeople's posts
 
@@ -18,28 +19,44 @@ def get_vanpeople_posts(page_numbers):
     # init posts list
     posts = []
 
-    # loop through each page
-    for page_number in page_numbers:
-        # get all posts' link in the page
-        post_links = parse_list(request(main_page(page_number)))
+    today = datetime.datetime.today()
+    postDate = today
+    forumPageNumber = 0
+    postCount = 0
 
-        # parse content in each post
-        for post_link in post_links:
+    while (postDate - today).days < oldestPostDays and postCount < maxPostCount:
+        requestUrl = url_builder.rentForumPage(forumPageNumber)
+        postLinks = parse_list(request(requestUrl))
+        
+        # import pdb; pdb.set_trace()
+        for post_link in postLinks:
             # assign post link
             post = {'link': post_link}
 
             # assign other fields to post
-            post.update(parse_post(request(post_link)))
+            postInfo, postDate = parse_post(request(post_link))
+            post.update(postInfo)
 
             # push post into posts list
             posts.append(post)
 
+            # print progress to screen 
+            print 'Processed posts: {0}'.format(len(posts))
+            sys.stdout.write("\033[F")
+            sys.stdout.write("\033[K")
+
+        # increment
+        forumPageNumber = forumPageNumber + 60 
+        postCount = postCount + len(postLinks)
+        print postDate, today 
+        print postCount, maxPostCount
     return posts
 
 
 def store_locally(posts):
     with open('data/vanpeople/' + str(time()) + '.json', 'w') as f:
-        f.write(dumps(posts, ensure_ascii=False, sort_keys=True, indent=4))
+        data = dumps(posts, ensure_ascii=False, sort_keys=True, indent=4)
+        f.write(data.encode('utf-8'))
 
 
 def transform(post):

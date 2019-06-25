@@ -8,8 +8,11 @@ from vanpeople.main import get_vanpeople_posts, store_locally
 options = parse_argv()
 
 # fetch posts from vanpeople
-posts = get_vanpeople_posts(option('default.vanpeople.page_numbers'))
+postDays = option('default.vanpeople.oldest_post_days')
+maxPostCount = option('default.vanpeople.max_posts')
+print postDays, maxPostCount
+posts = get_vanpeople_posts(postDays, maxPostCount)
 
 # store locally
-if 'local' in options:
-    store_locally(posts)
+#if 'local' in options:
+store_locally(posts)
